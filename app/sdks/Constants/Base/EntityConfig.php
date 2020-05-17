@@ -25,6 +25,7 @@ class EntityConfig
     public static $SETTINGS = [
 
         self::USER        => [
+            'model'             => 'UserModel',
             'dao'             => 'UserDao',
             'default_column'  => 'id',
             'custom_column'   => 'uid',

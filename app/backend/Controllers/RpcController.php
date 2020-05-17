@@ -15,12 +15,12 @@ use App\Sdks\Services\UserService;
  */
 class RpcController //extends ControllerBase
 {
-    public function testAction($a) 
+    public function testAction()
     {
-
-        $user = \App\Sdks\Models\Entity\Mysql\UserModel::findFirst(["id"=>1]);
+        echo 1;
+        /*$user = \App\Sdks\Models\Entity\Mysql\UserModel::findFirst(["id"=>1]);
         var_dump($user->name);
-        //$this->flash->successJson($user);
+        //$this->flash->successJson($user);*/
     }
 
 }

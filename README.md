@@ -211,7 +211,7 @@ return $userInfo;
 
 
 
-### 实体类函数封装
+### Dao层函数封装
 
 ```
  1.根据主键id查询单个对象getEntityById($id)
@@ -220,6 +220,21 @@ return $userInfo;
  支持传递数组, 建议控制在100个以内,且建立索引
  getEntityById([1,2,3])
  getEntityByCustomField([1,2,3])
+```
+
+findAll()自定义查询字段与查询条件,查询N个记录
+
+```
+使用示例
+ $parameters = [
+ 	   //查询条件
+       'conditions' => 'pid != :pid: and status = 1',
+       //参数绑定
+       'bind' => ['pid' = 1]
+       //指定被查询的字段   如果要查询 * 可以不写此条件
+       'columns'    => 'cname',
+        ];
+    $res = OpenCityModel::findAll($parameters);
 ```
 
 

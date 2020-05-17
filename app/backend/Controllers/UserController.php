@@ -61,9 +61,8 @@ class UserController extends ControllerBase
     {
         try {
             $uid = $this->request->getPost('uid');
-            $uid = '11';
+            $uid = '2';
             $ret = UserService::getUserInfo($uid);
-
             $this->getFlash()->successJson($ret);
         } catch (CustomException $e) {
             throw new JsonFmtException($e->getMessage(), $e->getCode());

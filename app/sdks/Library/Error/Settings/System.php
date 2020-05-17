@@ -56,7 +56,7 @@ class System
         ],
         self::ENTITY_NOT_CONFIGURED => [
             'real_info' => '该实体没有配置',
-            'show_info' => '方法调用失败'
+            'show_info' => '该实体没有配置'
         ],
         self::OBJ_TYPE_NOT_CONFIGURED => [
             'real_info' => '该对象类型没有配置: %d',

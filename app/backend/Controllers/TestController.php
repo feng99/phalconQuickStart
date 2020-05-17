@@ -27,7 +27,7 @@ class TestController extends ControllerBase
     {
         try {
             //$user = UserModel::findFirst(["id"=>1]);
-            $this->getFlash()->successJson("4ff");
+            $this->getFlash()->successJson("test ok");
         } catch (CustomException $e) {
             throw new JsonFmtException($e->getMessage(), $e->getCode());
         }
@@ -60,31 +60,28 @@ class TestController extends ControllerBase
      */
     public function fromCacheAction()
     {
-        die('4');
         try {
 
-            $userInfo = UserService::getUserInfo(1);
-//            $userInfo =  UserDao::getEntityById(4);
-
-         /*   $userInfo = UserModel::findFirst([
-                [
-                    "conditions" => " uid = :uid:",
-                    'bind'       =>[
-                        'uid' => 100
-                    ]
-                ]
-            ]);*/
-
-            //$userInfo = \App\Sdks\Dao\UserDao::findFirstById(100);
-
-            //$userInfo = UserService::getUserInfo(1);
-            //$userInfo = UserService::getUserInfoDelCache();
+            $userInfo = UserService::getUserInfo(2);
             $this->getFlash()->successJson($userInfo);
         } catch (CustomException $e) {
             throw new JsonFmtException($e->getMessage(), $e->getCode());
         }
     }
 
+
+    /**
+     * Entity封装测试
+     */
+    public function entityAction()
+    {
+        try {
+            $userInfo = UserService::getEntityById(5);
+            $this->getFlash()->successJson($userInfo);
+        } catch (CustomException $e) {
+            throw new JsonFmtException($e->getMessage(), $e->getCode());
+        }
+    }
 
     /**
      * 队列添加任务 测试

@@ -4,6 +4,7 @@ namespace App\Sdks\Services;
 
 
 use App\Sdks\Dao\UserDao;
+use App\Sdks\Models\UserModel;
 use App\Sdks\Services\Base\ServiceBase;
 
 /**
@@ -12,16 +13,11 @@ use App\Sdks\Services\Base\ServiceBase;
 class UserService extends ServiceBase
 {
     public static function getUserInfo($id){
-        //return UserDao::findFirstFromCache();
-        //return UserDao::getEntityByIdFromCache($id);
-        //return UserDao::getEntityByColumn($id);
-        return UserDao::findFirst([
-            "conditions" => "uid = :uid:",
-            'bind'       =>[
-                "uid" => $id
-            ]
-        ]);
+        return UserDao::findFirstById($id);
+    }
 
+    public static function getEntityById($id){
+        return UserDao::getEntityById(5);
     }
 
 }
