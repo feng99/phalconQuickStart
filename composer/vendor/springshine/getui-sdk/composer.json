@@ -1,0 +1,19 @@
+{
+    "name": "springshine/getui-sdk",
+    "description": "GetuiSDK",
+    "keywords": ["getui", "getuisdk", "getui-sdk", "getui-phalcon"],
+    "authors": [
+        {
+            "name": "springshine",
+            "email": "springshinehoo@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "autoload": {
+        "psr-4": {
+          "GeTui\\Notification\\": "src/"
+        }
+    }
+}

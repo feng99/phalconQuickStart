@@ -1,0 +1,11 @@
+{
+  "migration" : {
+    "migrations": "App/Migrations",
+    "config": "db.ini"
+  },
+  "controller" : {
+    "namespace": "Phalcon\\Test",
+    "directory": "App/Controllers",
+    "base-class": "App\\MyAbstractController"
+  }
+}

@@ -1,0 +1,39 @@
+{
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "illuminate/database": ">=4.0.9,<4.2",
+        "guzzlehttp/guzzle":"6.*",
+        "qiniu/php-sdk": "7.*",
+        "ashleydawson/simple-pagination": "~1.0",
+        "elasticsearch/elasticsearch": "~2.0",
+        "filp/whoops": "^1.1.6",
+        "clickalicious/phpmemadmin": "~0.3",
+        "mockery/mockery": "1.0.*@dev",
+        "phpunit/phpunit": "~4.5",
+        "endroid/qrcode": "^1.5",
+        "overtrue/wechat": "^2.1",
+        "pbweb/xhprof": "^1.0",
+        "phpoffice/phpexcel": "^1.8",
+        "springshine/getui-sdk": "^1.1",
+        "pda/pheanstalk": "^3.1",
+        "phalcon/devtools": "~3.2",
+        "inhere/php-validate": "dev-master",
+        "mongodb/mongodb": "^1.2",
+        "swiftmailer/swiftmailer": "^6.0"
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "Clickalicious\\PhpMemAdmin\\Installer::postInstall"
+        ]
+    },
+    "config": {
+        "secure-http": false
+    },
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://packagist.phpcomposer.com"
+        }
+    }
+}
