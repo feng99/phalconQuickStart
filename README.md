@@ -2,7 +2,7 @@
 
 # phalcon_demo
 
-基于phalcon3.2封装的demo项目
+基于phalcon3.4.5封装的demo项目
 
 # 环境要求
 - php7.0及以上
