@@ -26,7 +26,7 @@ $loader->registerNamespaces(
 $loader->register();
 
 //加载php api监控系统  php-monitor
-require '/data/softdata/php-monitor/src/autoPrepend.php';
+//require '/data/softdata/php-monitor/src/autoPrepend.php';
 
 // 加载composer
 require ROOT_PATH . '/composer/vendor/autoload.php';

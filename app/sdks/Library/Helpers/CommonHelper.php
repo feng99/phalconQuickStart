@@ -2,6 +2,12 @@
 
 namespace App\Sdks\Library\Helpers;
 
+use App\Sdks\Library\Error\ErrorHandle;
+use App\Sdks\Library\Error\Handlers\CoreLogicErr;
+use App\Sdks\Library\Error\Settings\CoreLogic;
+use GuzzleHttp\Client;
+use Phalcon\Crypt;
+
 /**
  * 公用函数类库
  */
@@ -74,7 +80,7 @@ class CommonHelper
      *
      * @return array
      */
-    public static function arrayMerge($arr1, $arr2)
+    public static function arrayMerge($arr1, $arr2): array
     {
         foreach ($arr2 as $key => $val) {
             if (array_key_exists($key, $arr1) && is_array($val)) {
@@ -121,7 +127,7 @@ class CommonHelper
 
     /**
      * 调用类的方法
-     *
+     * 自动判断是否静态方法
      * @param string $class
      * @param string $method
      * @param array $arguments
@@ -318,9 +324,7 @@ class CommonHelper
     public static function encryptToken($origin, $key)
     {
         $crypt = new Crypt();
-        $token = $crypt->encryptBase64($origin, $key);
-
-        return $token;
+        return $crypt->encryptBase64($origin, $key);
     }
 
     /**
@@ -349,7 +353,7 @@ class CommonHelper
      *
      * @return string
      */
-    public static function getClientIp()
+    public static function getClientIp(): string
     {
         // 优先使用真实IP
         if (getenv('REMOTE_ADDR')) {
@@ -408,10 +412,10 @@ class CommonHelper
     {
         switch ($type) {
             case "integer":
-                $var = intval($var);
+                $var = (int)$var;
                 break;
             case 'string':
-                $var = strval($var);
+                $var = (string)$var;
                 break;
         }
 
@@ -433,4 +437,109 @@ class CommonHelper
         return $classes;
     }
 
+    /**
+     * 使用Guzele扩展,模拟发送http请求
+     * 支持get,post方式
+     * @param string $url 请求的http地址
+     * @param array $params 请求参数
+     * @param string $method 请求方式 默认为POST
+     * @param int $timeout 超时时间 默认为3秒
+     * @param array $headers 头信息
+     * @return bool
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @author liuaifeng@szy.cn
+     */
+    public static function httpRequestGuzzle($url = '',$params = [],$method = 'POST',$timeout = 5,$headers = []){
+        $res = [];
+        try{
+            if(empty($headers)){
+                $headers = ['Content-Type'=>'application/json'];
+            }
+            $client   = new Client();
+            $response = $client->request($method,$url,
+                [
+                    'headers' => $headers,
+                    'json'    => $params,
+                    'timeout' => $timeout,
+                ]
+            );
+            $http_status_code     = $response->getStatusCode();
+            if(!in_array($http_status_code,[200,301,302],false)){
+                $err = new CoreLogicErr(CoreLogic::PREVIOUS_SERVICE_ERROR, ['']);
+                ErrorHandle::throwErr($err);
+            }
+
+            $res = self::jsonDecode($response->getBody(), true);
+        }catch (\Exception $e){
+            $response = '';
+            $request  = \GuzzleHttp\Psr7\str($e->getRequest());
+            if ($e->hasResponse()) {
+
+                $response = \GuzzleHttp\Psr7\str($e->getResponse());
+            }
+            //记录详细错误信息
+            LogHelper::error('http_request_guzzle_error', [$e,$request,$response,]
+            );
+        }
+        return $res;
+    }
+
+
+    /**
+     * 过滤文本中的特殊字符
+     * @param string $txt
+     * @param boolean $clear_number
+     * @return mixed|string
+     * @author liuaifeng@szy.cn
+     */
+    public static function clearTxt($txt = '',$clear_number = true)
+    {
+        //$txt = "女儿五岁了，上幼儿园了，我白天空闲时多了，在家帶娃也可用手<ud83d><udc23>睁米，挺简单的，1️⃣5️⃣种耳只卫供选择，做两年了，月月上几仟哒，✝️V信 47189 2917先看是什么（此处不回复）也能帮宝爸减轻点负担，我是宝妈，诚信做人。";
+
+        //过掉html标签
+        $t = strip_tags($txt);
+        $number = '';
+        if($clear_number){
+            $number = "01234567899⃣";
+        }
+        //过滤掉以下内容
+        $char = "️ .$number.5️⃣V✝ ，。、！？：；﹑•＂…‘’“”〝〞∕¦‖—　〈〉﹞﹝「」‹›〖〗】【»«』『〕〔》《﹐¸﹕︰﹔！¡？¿﹖﹌﹏﹋＇´ˊˋ―﹫︳︴¯＿￣﹢﹦﹤‐­˜﹟﹩﹠﹪﹡﹨﹍﹉﹎﹊ˇ︵︶︷︸︹︿﹀︺︽︾ˉ﹁﹂﹃﹄︻︼（）";
+
+
+        $pattern = array(
+            //英文标点符号
+            "/[[:punct:]]/i",
+            //中文标点符号
+            '/['.$char.']/u',
+            '/[ ]{2,}/'
+        );
+        return preg_replace($pattern, '', $t);
+    }
+
+
+    /**
+     * 根据经纬度算距离
+     *
+     * @param $lat1
+     * @param $lng1
+     * @param $lat2
+     * @param $lng2
+     * @return float
+     */
+    public static function getDistance($lat1, $lng1, $lat2, $lng2)
+    {
+        $R = 6374.004;
+        // 经度差值
+        $dx = $lng1 - $lng2;
+        // 纬度差值
+        $dy = $lat1 - $lat2;
+        // 平均纬度
+        $b = ($lat1 + $lat2) / 2;
+        // 东西距离
+        $Lx = deg2rad($dx) * $R * cos(deg2rad($b));
+        // 南北距离
+        $Ly = $R * deg2rad($dy);
+        // 用平面的矩形对角距离公式计算总距离
+        return sqrt($Lx * $Lx + $Ly * $Ly);
+    }
 }

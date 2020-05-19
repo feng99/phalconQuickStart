@@ -2,9 +2,11 @@
 
 namespace App\Sdks\Library\Helpers;
 
+use App\Sdks\Core\System\Plugins\CustomSecurity;
 use Phalcon\Di;
 use Pheanstalk\Pheanstalk;
 use Phalcon\Db\Adapter\Pdo\Mysql;
+use Redis;
 
 /**
  * DI容器类库
@@ -63,5 +65,18 @@ class DiHelper
     {
         return self::getShared('queue');
     }
+
+    /**
+     * 获取共享的security对象
+     * 封装了部分安全功能函数
+     *
+     * @return CustomSecurity
+     */
+    public static function getSecurity(): CustomSecurity
+    {
+        return self::getShared('security');
+    }
+
+
 
 }

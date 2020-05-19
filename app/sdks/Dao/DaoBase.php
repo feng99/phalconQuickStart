@@ -20,6 +20,7 @@ use App\Sdks\Constants\Base\EntityConfig;
 use App\Sdks\Library\Error\handlers\Err;
 use App\Sdks\Library\Error\Settings\System;
 use App\Sdks\Services\Base\ServiceBase;
+use Phalcon\Security\Random;
 
 
 class DaoBase extends Models\Base\ModelBase
@@ -30,7 +31,37 @@ class DaoBase extends Models\Base\ModelBase
 
 
 
+    /**
+     * 获取当前类实例
+     *
+     * @return ServiceBase
+     * @throws \ReflectionException
+     */
+    public static function getInstance()
+    {
+        $class = get_called_class();
 
+        if (isset(self::$instances[$class])) {
+            return self::$instances[$class];
+        }
+
+        if (!method_exists($class, '__construct')) {
+            self::$instances[$class] = new $class();
+            return self::$instances[$class];
+        }
+
+        $params = func_get_args();
+        $ref_method = new \ReflectionMethod($class, '__construct');
+        $construct_params = $ref_method->getParameters();
+        if (!empty($construct_params)) {
+            $ref_class = new \ReflectionClass($class);
+            self::$instances[$class] = $ref_class->newInstanceArgs($params);
+        } else {
+            self::$instances[$class] = new $class();
+        }
+
+        return self::$instances[$class];
+    }
 
 
 
@@ -84,9 +115,18 @@ class DaoBase extends Models\Base\ModelBase
     }
 
 
+    /**
+     * 缓存获取与Reset封装
+     * @param $class
+     * @param $method
+     * @param $arguments
+     * @param $cacheKey
+     * @param $expire
+     * @param bool $reset
+     * @return mixed|null
+     */
     private static function wrapGetCache($class, $method, $arguments, $cacheKey, $expire, $reset=false)
     {
-        //查询缓存
         $cache = DiHelper::getRedis();
         $t = microtime(true);
         if ($reset || !$cache->exists($cacheKey)) {
@@ -100,7 +140,9 @@ class DaoBase extends Models\Base\ModelBase
                     't' => microtime(true),
                     'r' => $data,
                 ];
-                $cache->set($cacheKey, json_encode($res), $expire);
+                //过期时间在原定时间,增加0-3分钟的随机时间,防止缓存雪崩问题
+                $random = new Random();
+                $cache->set($cacheKey, json_encode($res), $expire+$random->number(180));
             } while (0);
 
             //LockManager::unlock($lock);
@@ -114,10 +156,10 @@ class DaoBase extends Models\Base\ModelBase
 
     /**
      * 删除缓存
-     * @param String $cacheKey
+     * @param $cacheKey 缓存的key名称
      * @return mixed
      */
-    private static function wrapDelCache(String $cacheKey)
+    private static function wrapDelCache($cacheKey)
     {
         return DiHelper::getRedis()->del($cacheKey);
     }
