@@ -32,7 +32,8 @@ class BeforeDispatchLoop extends Plugin
      * @throws \ReflectionException
      */
     public function beforeDispatchLoop(Event $event, Dispatcher $dispatcher)
-    {/*
+    {
+        /*
         // 获取命名空间及控制器等信息
         $default_ns     = 'App\Backend\Controllers';
 

@@ -34,5 +34,9 @@ return [
     // mail配置
     'mail'         => require __DIR__. "/extensions/mail.php",
 
+    'rpc_server'   => require __DIR__. "/extensions/swoole.php",
+
+
+
 
 ];

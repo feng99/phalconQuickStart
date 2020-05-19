@@ -47,7 +47,7 @@ $app_ini = CommonHelper::getParseIniData($application_path);
  */
 
 // 获取配置中的evn环境变量
-$env = isset($app_ini['application']['env']) ? $app_ini['application']['env'] : '';
+$env = $app_ini['application']['env'] ?? '';
 // 允许的环境配置
 $allow_env = [
     'dev',      // 开发环境
@@ -56,7 +56,7 @@ $allow_env = [
     'pro',      // 生产环境
 ];
 
-if (!in_array($env, $allow_env)) {
+if (!in_array($env, $allow_env, true)) {
     exit('env setting is wrong');
 }
 
@@ -119,10 +119,7 @@ if (php_sapi_name() == 'cli') {
  * ----------------------------------------
  */
 require ROOT_PATH . "/app/bootstrap/exception_handler.php";
-/**
- * 加载rpc server
- */
-require ROOT_PATH . "/app/bootstrap/rpc_services.php";
+
 
 
 /**
