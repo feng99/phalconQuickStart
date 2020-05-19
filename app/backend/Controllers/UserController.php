@@ -69,4 +69,51 @@ class UserController extends ControllerBase
         }
     }
 
+    /**
+     * 获取用户信息
+     *
+     * @throws JsonFmtException
+     */
+    public function getUserListAction()
+    {
+        try {
+            $uid = $this->request->getPost('uid');
+            $uid = '2';
+            $ret = UserService::getUserList($uid);
+            $this->getFlash()->successJson($ret);
+        } catch (CustomException $e) {
+            throw new JsonFmtException($e->getMessage(), $e->getCode());
+        }
+    }
+
+    /**
+     * 获取用户信息
+     *
+     * @throws JsonFmtException
+     */
+    public function findCustomAction()
+    {
+        try {
+
+
+
+            //$sql = "select id from t_users where id = :id ";
+          /*  $sql = "select id from t_users where id > :id ";
+            $bind = [
+                'id' => 0
+            ];
+            $res = \App\Sdks\Library\Helpers\DiHelper::getDB()->query($sql,$bind)->fetchAll();
+            //$res->setFetchMode(\Phalcon\Db::FETCH_ASSOC);
+            $this->getFlash()->successJson($res);*/
+
+
+            $custom = \App\Sdks\Dao\UserDao::findCustom();
+            $this->getFlash()->successJson($custom);
+        } catch (CustomException $e) {
+            throw new JsonFmtException($e->getMessage(), $e->getCode());
+        }
+    }
+
+
+
 }

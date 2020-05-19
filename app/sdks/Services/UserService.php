@@ -13,11 +13,16 @@ use App\Sdks\Services\Base\ServiceBase;
 class UserService extends ServiceBase
 {
     public static function getUserInfo($id){
+        //return UserDao::findFirstById($id)->toArray();
         return UserDao::findFirstById($id);
     }
 
     public static function getEntityById($id){
         return UserDao::getEntityById(5);
+    }
+
+    public static function getUserList($id){
+        return UserDao::findList();
     }
 
 }

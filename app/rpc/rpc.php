@@ -23,13 +23,13 @@ $di->set('dispatcher', function () {
 
 $rpc_class = "App\Rpc\Api";
 
-
 list($host,$port) = explode(":",$config->rpc_server->bind);
+
 $server = new Swoole\Server($host,$port,SWOOLE_BASE,SWOOLE_SOCK_TCP);
 
 $server->set($config->rpc_server->settings->toArray());
 
-$server->on('receive', function($svr, $fd, $from_id, $data) use($console,$rpc_class){
+$server->on('receive',  function($svr, $fd, $from_id, $data) use($console,$rpc_class){
 
     $params = [
         'server'  => $svr,

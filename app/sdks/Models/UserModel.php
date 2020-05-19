@@ -19,5 +19,13 @@ class UserModel extends DaoBase
         return "t_users";
     }
 
+    public function initialize()
+    {
+        parent::initialize();
+        $this->skipAttributes(array('create_time'));
+        $this->useDynamicUpdate(true);
+
+    }
+
 
 }
