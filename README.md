@@ -246,7 +246,7 @@ findAll()自定义查询字段与查询条件,查询N个记录
 >
 > 主要是为了实现 微服务后 跨项目调用进行数据数据传输.
 
-主要代码  一共3个文件 
+### 主要代码  一共3个文件 
 
 ```
 rpc.php  入口文件,启动后常驻内存
@@ -266,6 +266,95 @@ return [
         ]
 ];
 ```
+
+
+
+### 服务端启动命令
+
+```
+//注意rpc.php文件的路径
+/usr/local/php/bin/php /data/web/github/phalcondemo/app/rpc/rpc.php
+```
+
+### 服务端编码示例
+
+> 这里就像MVC的控制器入口一样.  可调用service层,dao层代码 操作数据库 操作缓存等.
+
+```
+ApiRpc.php中 新增一个函数
+
+	/**
+     * 测试函数  接收一个参数
+     * @param $id
+     */
+    public function query($id)
+    {
+        try{
+            $data = [
+                1 => ["id"=>1,"name"=>"aaa"],
+                2 => ["id"=>2,"name"=>"bbb"],
+            ];
+
+            if(!isset($data[$id])){
+                throw new \RuntimeException(" id:'{$id}' not found!");
+            }
+            $this->success($data[$id]);
+        }catch (\Exception $e){
+            $this->error($e->getMessage(),1200);
+        }
+    }
+    
+    
+     /**
+     * 获取单个用户信息
+     * @param $id
+     */
+    public function getUserInfo($id)
+    {
+        var_dump("request parameter:",$id);
+        try{
+            $data = UserService::getUserInfo($id);
+            $this->success($data->toArray());
+        }catch (\Exception $e){
+            $this->error($e->getMessage(),1200);
+        }
+
+    }
+```
+
+
+
+
+
+### 客户端调用示例
+
+```
+public function testAction()
+    {
+        try {
+        	//注意这里的地址  与上面的配置文件里的信息对应
+            $client = new \Yar_Client("tcp://127.0.0.1:9500");
+            
+            
+            //$user = $client->query("1");
+            
+
+            //请求单个用户信息
+            //$user = $client->getUserInfo("2");
+            //var_dump($user);
+
+            //请求多个用户信息
+            $user = $client->getUserList(["1","2"]);
+            var_dump($user);
+        } catch (Exception $e) {
+            // 异常处理
+        }
+    }
+```
+
+
+
+
 
 # composer.json
 

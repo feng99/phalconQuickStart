@@ -30,7 +30,6 @@ class ApiRpc extends RpcBase
         }catch (\Exception $e){
             $this->error($e->getMessage(),1200);
         }
-
     }
 
     /**
@@ -58,8 +57,7 @@ class ApiRpc extends RpcBase
         var_dump("request parameter:",$id);
         try{
             $data = UserService::getUserInfo($id);
-            //$this->success($data->toArray());
-            $this->success(json_encode($data,true));
+            $this->success($data->toArray());
         }catch (\Exception $e){
             $this->error($e->getMessage(),1200);
         }
