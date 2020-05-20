@@ -452,4 +452,4 @@ security->checkPassword($password, $password_hash);
 
 ### 致谢
 
-感谢军哥在phalcon结合yar swoole实现php项目服务拆分,给予的帮助.
+感谢军哥,在phalcon结合yar+swoole实现 RPC Server,给予的帮助.
