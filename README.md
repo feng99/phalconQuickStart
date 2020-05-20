@@ -236,6 +236,37 @@ findAll()自定义查询字段与查询条件,查询N个记录
 
 
 
+
+
+## RPC功能封装[yar+swoole]
+
+> 基于yar 2.1  + swoole 4.4.18版本实现
+>
+> 支持PHP/JSON/MSGPACK格式
+>
+> 主要是为了实现 微服务后 跨项目调用进行数据数据传输.
+
+主要代码  一共3个文件 
+
+```
+rpc.php  入口文件,启动后常驻内存
+ApiRpc.php 对外提供rpc接口的类
+RpcBase.php 对数据Header与Body的解析
+
+
+配置信息:
+return [
+        'bind' => '127.0.0.1:9500',
+        //swoole settings
+        'settings' => [
+            'worker_num'    => 2,
+            'daemonize'     => false,
+            'user'          => 'www',
+            'group'         => 'www'
+        ]
+];
+```
+
 # composer.json
 
 ```
@@ -328,3 +359,8 @@ security->generatePassword("明文密码");
 security->checkPassword($password, $password_hash);
 ```
 
+
+
+### 致谢
+
+感谢军哥在phalcon结合yar swoole实现php项目服务拆分,给予的帮助.
