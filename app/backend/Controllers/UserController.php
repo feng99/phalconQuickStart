@@ -107,8 +107,12 @@ class UserController extends ControllerBase
             $this->getFlash()->successJson($res);*/
 
 
-            $custom = \App\Sdks\Dao\UserDao::findCustom();
+            $custom = \App\Sdks\Dao\UserDao::findOneData();
             $this->getFlash()->successJson($custom);
+
+
+          /*  $custom = \App\Sdks\Dao\UserDao::findCustom();
+            $this->getFlash()->successJson($custom);*/
         } catch (CustomException $e) {
             throw new JsonFmtException($e->getMessage(), $e->getCode());
         }

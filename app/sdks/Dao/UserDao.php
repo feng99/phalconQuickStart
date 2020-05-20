@@ -43,4 +43,16 @@ class UserDao extends UserModel
             ]);
     }
 
+    public static function findOneData()
+    {
+        return self::findOne([
+            "conditions" => "id > :id:",
+            'bind' => [
+                "id" => 0
+            ],
+            'columns'    => 'id',
+        ]);
+    }
+
+
 }

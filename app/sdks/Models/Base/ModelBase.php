@@ -197,7 +197,7 @@ class ModelBase extends Model
      * 使用示例
      *  $parameters = [
             'conditions' => 'pid != :pid: and status = 1',
-     *      'bind' => ['pid' = 1]
+           'bind' => ['pid' = 1]
             'columns'    => 'cname',
         ];
     $res = OpenCityModel::findAll($parameters);

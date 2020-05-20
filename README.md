@@ -4,6 +4,8 @@
 
 基于phalcon3.4.5封装的demo项目
 
+帮助你快速启动项目.
+
 # 环境要求
 - php7.0及以上
 - phalcon3.2.4及以上
@@ -214,12 +216,7 @@ return $userInfo;
 ### Dao层函数封装
 
 ```
- 1.根据主键id查询单个对象getEntityById($id)
- 2.根据指定字段查询单个对象getEntityByCustomField($id)
- 3.根据主键id或者自定义字段 进行in查询   
- 支持传递数组, 建议控制在100个以内,且建立索引
- getEntityById([1,2,3])
- getEntityByCustomField([1,2,3])
+  
 ```
 
 findAll()自定义查询字段与查询条件,查询N个记录
