@@ -9,6 +9,7 @@ namespace App\Tasks\Base;
 use App\Sdks\Constants\Base\QueueTaskConfig;
 use App\Sdks\Library\Helpers\CommonHelper;
 use App\Sdks\Library\Helpers\LogHelper;
+use App\Sdks\Services\Base\QueueService;
 use Phalcon\Cli\Task;
 
 class QueueTaskBase extends Task

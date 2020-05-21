@@ -4,12 +4,12 @@ namespace App\Tasks\Task;
 
 
 
+use App\Sdks\Services\UserService;
 use App\Tasks\Base\BaseTask;
 
 /**
  * 测试task
  *
- * 
  */
 class TestTask extends BaseTask
 {
@@ -21,7 +21,8 @@ class TestTask extends BaseTask
 
     public function testAction()
     {
-        echo "test";
+        $userInfo = UserService::getUserInfo(2);
+        var_dump($userInfo->toArray());
     }
 
 

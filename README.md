@@ -354,6 +354,33 @@ public function testAction()
 
 
 
+## Task离线任务
+
+目录:app/tasks
+
+消息队列任务和业务离线数据任务是分开的两个目录
+
+消息队列任务在目录Queue
+
+业务离线数据任务,在目录Task
+
+执行命令
+
+```
+php cli.php task.test test
+php cli.php queue.sms exec
+```
+
+
+
+
+
+
+
+
+
+
+
 
 
 # composer.json
