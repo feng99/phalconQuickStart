@@ -6,6 +6,8 @@
  * 同一个业务用一个tube即可
  */
 use \App\Sdks\Constants;
+use App\Sdks\Constants\Base\QueueTube;
+use App\Tasks\Base\QueueTaskBase;
 
 class SmsTask extends QueueTaskBase
 {
@@ -13,6 +15,6 @@ class SmsTask extends QueueTaskBase
     public function execAction()
     {
         //传入指定的Tube
-        parent::run(Constants\QueueTube::SEND_SMS);
+        parent::run(QueueTube::SEND_SMS);
     }
 }

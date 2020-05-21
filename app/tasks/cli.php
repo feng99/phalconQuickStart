@@ -12,7 +12,7 @@ function getModuleTask($task)
 {
     $modules = explode('.', $task);
     if (count($modules) == 1) {
-        exit("task need at least 2 parameters");
+        exit("task need at least 2 parameters | php cli.php task.test test");
     }
 
     $class  = ucfirst(array_pop($modules));

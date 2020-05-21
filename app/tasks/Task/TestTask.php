@@ -1,6 +1,10 @@
 <?php
 
-namespace App\Tasks\Backend;
+namespace App\Tasks\Task;
+
+
+
+use App\Tasks\Base\BaseTask;
 
 /**
  * 测试task
@@ -13,4 +17,12 @@ class TestTask extends BaseTask
     {
         echo __CLASS__;
     }
+
+
+    public function testAction()
+    {
+        echo "test";
+    }
+
+
 }

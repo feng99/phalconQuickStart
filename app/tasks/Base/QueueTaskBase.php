@@ -1,4 +1,6 @@
 <?php
+namespace App\Tasks\Base;
+
 /**
  * 队列任务消费者
  * 循环处理
@@ -7,9 +9,9 @@
 use App\Sdks\Constants\Base\QueueTaskConfig;
 use App\Sdks\Library\Helpers\CommonHelper;
 use App\Sdks\Library\Helpers\LogHelper;
-use App\Sdks\Services\QueueService;
+use Phalcon\Cli\Task;
 
-class QueueTaskBase extends \Phalcon\CLI\Task
+class QueueTaskBase extends Task
 {
 
     /**
