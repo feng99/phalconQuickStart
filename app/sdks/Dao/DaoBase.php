@@ -111,9 +111,11 @@ class DaoBase extends ModelBase
                     // 重置缓存数据
                     return self::wrapGetCache($class, $method, $arguments, $cacheKey, RedisKey::expire($key), true);
                 case "FromCacheMGet":
-                    return self::wrapGetCacheBatch($class, $method, $arguments, $cacheKey, RedisKey::expire($key));
-                // 从缓存中批量获取数据
-
+                    // 从缓存中批量获取数据  in查询
+                    return self::wrapGetCacheBatch($class, $method, $arguments, $key, RedisKey::expire($key));
+                case "DelCacheMGet":
+                    // 从缓存中批量删除数据 in查询
+                    return self::wrapDelCacheBatch($class, $method, $arguments);
             }
         }
 
@@ -231,26 +233,27 @@ class DaoBase extends ModelBase
                     LogHelper::error('RedisKey.php! no config function ', $key);
                     $err = new SysErr(System::CACHE_KEY_NOT_CONFIGURED);
                     ErrorHandle::throwErr($err);
-                }else{
+                } else {
                     //检查是否指定自定义字段
                     $keySetting = RedisKey::$SETTINGS[$key];
-                    if(!isset($keySetting['custom_field'])){
+                    if (!isset($keySetting['custom_field'])) {
                         LogHelper::error('RedisKey.php! miss custom_field ', $key);
                         $err = new SysErr(System::CACHE_KEY_NOT_CONFIGURED);
                         ErrorHandle::throwErr($err);
-                    }else{
+                    } else {
                         $pk_id = $keySetting['custom_field'];
                     }
                 }
                 foreach ($db_res as $item) {
-                    $set_data[sprintf($key . '||%s', CommonHelper::jsonEncode([$item[$pk_id]]))] = json_encode($item, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+                    //$set_data[sprintf($cacheKey . '||%s', CommonHelper::jsonEncode([$item[$pk_id]]))] = json_encode($item, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+                    $set_data[sprintf($cacheKey . '||%s', $item[$pk_id])] = json_encode($item, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
                 }
                 $redis->mSet($set_data);
 
                 //过期时间在原定时间,增加0-3分钟的随机时间,防止缓存雪崩问题
                 $random = new Random();
                 foreach ($set_data as $fk => $fv) {
-                    $redis->expire($fk, RedisKey::expire() + $random->number(180));
+                    $redis->expire($fk, $time + $random->number(180));
                 }
                 $res = array_merge($db_res, $res);
                 //按照id重新按顺序组合
