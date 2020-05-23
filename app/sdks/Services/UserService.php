@@ -14,7 +14,7 @@ class UserService extends ServiceBase
 {
     public static function getUserInfo($id){
         //return UserDao::findFirstById($id)->toArray();
-        return UserDao::findFirstById($id);
+        return UserDao::findFirstByIdFromCache($id);
     }
 
     public static function getEntityById($id){

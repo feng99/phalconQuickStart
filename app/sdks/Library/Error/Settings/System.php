@@ -11,13 +11,13 @@ class System
 {
     // 错误码范围 1000~1999
 
-    const MEMCACHE_KEY_NOT_CONFIGURED       = 1001;
+    const CACHE_KEY_NOT_CONFIGURED          = 1001;
     const CRYPT_DECODE_ERROR                = 1002;
     const JSON_ERROR                        = 1003;
     const LOCK_ACQUIRE_ERROR                = 1004;
     const LOCK_RELEASE_ERROR                = 1005;
     const ENTITY_NOT_CONFIGURED             = 1006;
-    const OBJ_TYPE_NOT_CONFIGURED            = 1007;
+    const OBJ_TYPE_NOT_CONFIGURED           = 1007;
     const REDIS_KEY_NOT_CONFIGURED          = 1008;
     const INTERNAL_REQUEST_ERROR            = 1009;
     const CLASS_NOT_EXISTS                  = 1010;
@@ -34,9 +34,9 @@ class System
      * @var array
      */
     public static $MSGS = [
-        self::MEMCACHE_KEY_NOT_CONFIGURED => [
-            'real_info' => 'cache_key没有配置',
-            'show_info' => 'cache_key没有配置'
+        self::CACHE_KEY_NOT_CONFIGURED => [
+            'real_info' => 'cache_key没有配置,请看RedisKey.php',
+            'show_info' => 'cache_key没有配置,请看RedisKey.php'
         ],
         self::CRYPT_DECODE_ERROR => [
             'real_info' => 'crypt解密失败',

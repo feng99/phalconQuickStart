@@ -33,6 +33,12 @@ class RedisKey
             'expire_time' => 86400,
             'custom_key'  => 'userInfo'
         ],
+        //批量查询配置
+        'App\Sdks\Dao\UserDao::findInList' => [
+            'expire_time' => 86400,
+            'custom_key'    => 'userListByIds',
+            'custom_field'  => 'id'
+        ],
 
 
 

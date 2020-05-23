@@ -54,5 +54,18 @@ class UserDao extends UserModel
         ]);
     }
 
-
+    /**
+     * in查询
+     * @param $ids 数组
+     * @return mixed
+     */
+    public static function findInList($ids)
+    {
+        return self::find(
+            [
+                'conditions' => ' id IN ({ids:array})',
+                'bind'       => ['ids'=>$ids],
+            ]
+        );
+    }
 }

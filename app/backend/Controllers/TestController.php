@@ -12,6 +12,7 @@ use App\Sdks\Library\Helpers\DiHelper;
 use App\Sdks\Models\UserModel;
 use App\Sdks\Services\Base\QueueService;
 use App\Sdks\Services\UserService;
+use Phalcon\Security\Random;
 
 /**
  * 测试控制器
@@ -98,4 +99,20 @@ class TestController extends ControllerBase
         var_dump("任务id:",$jobId);
     }
 
+
+    /**
+     * 从缓存中批量获取数据
+     * 缓存封装操作测试
+     */
+    public function fromCacheMGetAction()
+    {
+        try {
+            $ids = [2,3,4];
+//            $userList = UserDao::findInList($ids);
+            $userList = UserDao::findInListFromCacheMGet($ids);
+            $this->getFlash()->successJson($userList);
+        } catch (CustomException $e) {
+            throw new JsonFmtException($e->getMessage(), $e->getCode());
+        }
+    }
 }

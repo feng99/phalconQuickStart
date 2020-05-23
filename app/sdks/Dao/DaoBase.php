@@ -2,33 +2,36 @@
 /**
  * 实体服务基类
  * 主要封装
- * 1.根据主键id查询单个对象
- * 2.根据指定字段查询单个对象
- * 3.根据主键id或者自定义字段 进行in查询
+ * //1.根据主键id查询单个对象
+ * //2.根据指定字段查询单个对象
+ * //3.根据主键id或者自定义字段 进行in查询
+ *
+ *
+ * //封装缓存读取操作  注意:只针对String结构
+ * 1.FromCache
+ * 2.DelCache
+ * 3.ResetCache
+ * 5.FromCacheMGet
+ * 6.DelCacheBatch
  */
 
 namespace App\Sdks\Dao;
 
+use App\Sdks\Constants\McKey;
+use Phalcon\Security\Random;
+use App\Sdks\Models\Base\ModelBase;
 use App\Sdks\Constants\Base\RedisKey;
-use App\Sdks\Library\Helpers\CommonHelper;
 use App\Sdks\Library\Helpers\DiHelper;
 use App\Sdks\Library\Helpers\LogHelper;
-use App\Sdks\Library\Helpers\Page;
-use App\Sdks\Models;
 use App\Sdks\Library\Error\ErrorHandle;
-use App\Sdks\Constants\Base\EntityConfig;
-use App\Sdks\Library\Error\handlers\Err;
-use App\Sdks\Library\Error\Settings\System;
 use App\Sdks\Services\Base\ServiceBase;
-use Phalcon\Security\Random;
+use App\Sdks\Library\Helpers\CommonHelper;
+use App\Sdks\Library\Error\Settings\System;
+use App\Sdks\Library\Error\Handlers\SysErr;
 
 
-class DaoBase extends Models\Base\ModelBase
+class DaoBase extends ModelBase
 {
-
-
-
-
 
 
     /**
@@ -64,46 +67,53 @@ class DaoBase extends Models\Base\ModelBase
     }
 
 
-
     public function __call($name, $arguments)
     {
-        self::__callStatic($name,$arguments);
+        self::__callStatic($name, $arguments);
     }
 
     /**
      * 缓存操作统一封装
-     * From  从缓存中获取数据
-     * Del   删除指定的缓存
-     * Reset 缓存重新赋值
      * @param $name
      * @param $arguments
      * @return mixed|void|null
+     * @throws \ReflectionException
      */
     public static function __callStatic($name, $arguments)
     {
         $class = get_called_class();
         $method = $name;
 
-        if (preg_match(' /(.+?)(From|Del|Reset)Cache$/', $name, $match)) {
+        if (preg_match(' /(.+?)(FromCache|DelCache|ResetCache|FromCacheMGet)$/', $name, $match)) {
             // 获取真实方法名
             $method = $match[1];
             $action = $match[2];
 
             $key = sprintf('%s::%s', $class, $method);
-            $settings = RedisKey::$SETTINGS[$key];
-            //如果存在自定义key，则使用自定义key
-            if (isset($settings['custom_key'])) {
-                $key = $settings['custom_key'];
+            if (isset(RedisKey::$SETTINGS[$key])) {
+                $settings = RedisKey::$SETTINGS[$key];
+                //如果存在自定义key，则使用自定义key
+                if (isset($settings['custom_key'])) {
+                    $key = $settings['custom_key'];
+                }
             }
+
             $cacheKey = sprintf("$key||%s", json_encode($arguments));
 
             switch ($action) {
-                case "From":
+                case "FromCache":
+                    // 从缓存中获取数据
                     return self::wrapGetCache($class, $method, $arguments, $cacheKey, RedisKey::expire($key));
-                case "Del":
+                case "DelCache":
+                    // 删除缓存数据
                     return self::wrapDelCache($cacheKey);
-                case "Reset":
+                case "ResetCache":
+                    // 重置缓存数据
                     return self::wrapGetCache($class, $method, $arguments, $cacheKey, RedisKey::expire($key), true);
+                case "FromCacheMGet":
+                    return self::wrapGetCacheBatch($class, $method, $arguments, $cacheKey, RedisKey::expire($key));
+                // 从缓存中批量获取数据
+
             }
         }
 
@@ -125,7 +135,7 @@ class DaoBase extends Models\Base\ModelBase
      * @param bool $reset
      * @return mixed|null
      */
-    private static function wrapGetCache($class, $method, $arguments, $cacheKey, $expire, $reset=false)
+    private static function wrapGetCache($class, $method, $arguments, $cacheKey, $expire, $reset = false)
     {
         $cache = DiHelper::getRedis();
         $t = microtime(true);
@@ -142,7 +152,7 @@ class DaoBase extends Models\Base\ModelBase
                 ];
                 //过期时间在原定时间,增加0-3分钟的随机时间,防止缓存雪崩问题
                 $random = new Random();
-                $cache->set($cacheKey, json_encode($res), $expire+$random->number(180));
+                $cache->set($cacheKey, json_encode($res), $expire + $random->number(180));
             } while (0);
 
             //LockManager::unlock($lock);
@@ -165,9 +175,127 @@ class DaoBase extends Models\Base\ModelBase
     }
 
 
+    /**
+     * 封装缓存的存取(批量)使用redis存储
+     * 注意:
+     * 1.原函数  必须支持In查询
+     * 2.如果传递的参数不是id  则需要在RedisKey.php中进行配置.
+     *
+     * @param $class
+     * @param $method
+     * @param $arguments
+     * @param $cacheKey
+     * @param $time
+     * @return array|bool
+     * @throws \ReflectionException
+     */
+    private static function wrapGetCacheBatch($class, $method, $arguments, $cacheKey, $time)
+    {
+        if (!is_array($arguments[0])) {
+            return false;
+        }
+        // 获取缓存配置
+        $class_origin = $class;
+        $class = is_object($class) ? get_class($class) : $class;
+        $key = $class . '::' . $method;
+
+        $redis = DiHelper::getRedis();
+        $get_keys = [];
+        foreach ($arguments[0] as $item) {
+            $get_keys[] = sprintf($key . '||%s', CommonHelper::jsonEncode([$item]));
+        }
+        // 查询缓存
+        $res = $redis->mGet($get_keys);
+
+        $get_obj_ids = [];
+        if (is_array($res)) {
+            foreach ($res as $k => &$rv) {
+                if ($rv == false) {
+                    $get_obj_ids[] = $arguments[0][$k];
+                    unset($res[$k]);
+                } elseif (is_string($rv)) {
+                    $rv = json_decode($rv, true);
+                }
+            }
+        }
+        if ($get_obj_ids) {
+            // 查db并写入缓存
+            //$db_res = CommonHelper::callMethod($class_origin, $method, [$get_obj_ids]);
+            $db_res = CommonHelper::callMethod($class_origin, $method, $get_obj_ids);
+            if ($db_res) {
+                $set_data = [];
+                $db_res = $db_res->toArray();
+                $pk_id = 'id';
+                //如果没有id字段且配置中未指定字段,则提示错误
+                if (!isset($db_res[0]['id']) && !isset(RedisKey::$SETTINGS[$key])) {
+                    LogHelper::error('RedisKey.php! no config function ', $key);
+                    $err = new SysErr(System::CACHE_KEY_NOT_CONFIGURED);
+                    ErrorHandle::throwErr($err);
+                }else{
+                    //检查是否指定自定义字段
+                    $keySetting = RedisKey::$SETTINGS[$key];
+                    if(!isset($keySetting['custom_field'])){
+                        LogHelper::error('RedisKey.php! miss custom_field ', $key);
+                        $err = new SysErr(System::CACHE_KEY_NOT_CONFIGURED);
+                        ErrorHandle::throwErr($err);
+                    }else{
+                        $pk_id = $keySetting['custom_field'];
+                    }
+                }
+                foreach ($db_res as $item) {
+                    $set_data[sprintf($key . '||%s', CommonHelper::jsonEncode([$item[$pk_id]]))] = json_encode($item, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+                }
+                $redis->mSet($set_data);
+
+                //过期时间在原定时间,增加0-3分钟的随机时间,防止缓存雪崩问题
+                $random = new Random();
+                foreach ($set_data as $fk => $fv) {
+                    $redis->expire($fk, RedisKey::expire() + $random->number(180));
+                }
+                $res = array_merge($db_res, $res);
+                //按照id重新按顺序组合
+                $res_sort = array_combine(array_column($res, $pk_id), $res);
+
+                $res = [];
+                foreach ($arguments[0] as $item) {
+                    if (!empty($res_sort[$item])) {
+                        $res[] = $res_sort[$item];
+                    }
+                }
+            }
+        }
+        return $res;
+    }
 
 
+    /**
+     * 封装删除缓存-批量
+     *
+     * @param $class
+     * @param $method
+     * @param $arguments
+     * @return mixed
+     */
+    private static function wrapDelCacheBatch($class, $method, $arguments)
+    {
+        // 获取缓存key
+        $class = is_object($class) ? get_class($class) : $class;
+        $key = $class . '::' . $method;
 
+        //如果存在自定义key，则使用自定义key
+        if (isset(RedisKey::$SETTINGS[$key]['custom_key'])) {
+            $key = RedisKey::$SETTINGS[$key]['custom_key'];
+        }
+
+        $redis = DiHelper::getRedis();
+        $res = false;
+        foreach ($arguments[0] as $item) {
+            $cache_key = sprintf($key . '||%s', CommonHelper::jsonEncode([$item]));
+            $res = $redis->del($cache_key);
+            LogHelper::debug('del_entity_key', $cache_key);
+        }
+        return $res;
+    }
 
 
     /**
