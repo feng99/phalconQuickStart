@@ -20,7 +20,8 @@
         "phalcon/devtools": "~3.2",
         "inhere/php-validate": "dev-master",
         "mongodb/mongodb": "^1.2",
-        "swiftmailer/swiftmailer": "^6.0"
+        "swiftmailer/swiftmailer": "^6.0",
+        "dmkit/phalcon-jwt-auth" : "dev-master"
     },
     "scripts": {
         "post-install-cmd": [
@@ -33,7 +34,7 @@
     "repositories": {
         "packagist": {
             "type": "composer",
-            "url": "https://packagist.phpcomposer.com"
+            "url": "https://mirrors.aliyun.com/composer/"
         }
     }
 }

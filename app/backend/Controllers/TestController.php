@@ -5,14 +5,10 @@ use App\Sdks\Constants\Base\QueueTaskConfig;
 use App\Sdks\Dao\UserDao;
 use App\Sdks\Library\Error\Exceptions\CustomException;
 use App\Sdks\Library\Exceptions\JsonFmtException;
-use App\Sdks\Library\Error\ErrorHandle;
-use App\Sdks\Library\Error\handlers\Err;
-use App\Sdks\Library\Error\Settings\CoreLogic;
 use App\Sdks\Library\Helpers\DiHelper;
-use App\Sdks\Models\UserModel;
+use App\Sdks\Library\Helpers\JWT;
 use App\Sdks\Services\Base\QueueService;
 use App\Sdks\Services\UserService;
-use Phalcon\Security\Random;
 
 /**
  * 测试控制器
@@ -115,4 +111,39 @@ class TestController extends ControllerBase
             throw new JsonFmtException($e->getMessage(), $e->getCode());
         }
     }
+
+
+    /**
+     * jwt 加密测试函数
+     * @throws JsonFmtException
+     */
+    public function jwtEncodeAction()
+    {
+        try {
+            //$payload, $key, $alg = 'HS256', $keyId = null, $head = null
+            $secretKey = DiHelper::getConfig()->jwtAuth->secretKey;
+            $token = JWT::encode(["userId" => "123458"],$secretKey);
+            $this->getFlash()->successJson(['token'=>$token]);
+        } catch (CustomException $e) {
+            throw new JsonFmtException($e->getMessage(), $e->getCode());
+        }
+    }
+
+    /**
+     * jwt 测试函数
+     * @throws JsonFmtException
+     */
+    public function jwtDecodeAction()
+    {
+        try {
+            $secretKey = DiHelper::getConfig()->jwtAuth->secretKey;
+            $tokenb = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiIxMjM0NTgifQ.-XLFdIggONBJsrUSpu16QLfWw6peaY1H-kwzeMbpKqc';
+            $body = JWT::decode($tokenb,$secretKey);
+            var_dump($body);
+        } catch (CustomException $e) {
+            throw new JsonFmtException($e->getMessage(), $e->getCode());
+        }
+    }
+
+
 }

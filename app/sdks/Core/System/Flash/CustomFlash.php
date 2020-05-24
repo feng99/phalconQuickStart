@@ -30,6 +30,10 @@ class CustomFlash extends Direct
 
         $response->setContentType('application/json', 'UTF-8');
 
+        if(isset($data['token'])){
+            $response->setHeader("token",$data['token']);
+        }
+
         if (!empty($data)) {
             $data = CommonHelper::beforeJsonEncode($data, false, true);
         } else {
