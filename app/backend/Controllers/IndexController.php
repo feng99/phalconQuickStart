@@ -29,6 +29,8 @@ class IndexController extends ControllerBase
          * 实体层(Model)        无调用,DB TABLE的映射
          */
         try {
+            $post        = $this->request->getPost();
+            var_dump($post);die();
             LogHelper::debug("testlog","logmsg");
             $this->getFlash()->successJson('hello world==!');
         } catch (CustomException $e) {

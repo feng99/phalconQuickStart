@@ -1,6 +1,7 @@
 <?php
 
 use Phalcon\Di\FactoryDefault;
+use Phalcon\Http\Request;
 use Phalcon\Mvc\Url;
 use Phalcon\Mvc\Dispatcher;
 use Phalcon\Mvc\View;
@@ -50,6 +51,14 @@ $di->setShared('view', function () use ($config) {
     ]);
 
     return $view;
+});
+
+/**
+ * 注册request对象
+ */
+$di->setShared('request', function () use ($config) {
+    $request = new Request();
+    return $request;
 });
 
 /**

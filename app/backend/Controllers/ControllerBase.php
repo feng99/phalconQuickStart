@@ -6,6 +6,7 @@ use App\Sdks\Core\System\Controllers\PhalBaseController;
 use App\Sdks\Core\System\Flash\CustomFlash;
 use Phalcon\Db\Adapter\Pdo\Mysql;
 use Phalcon\Di;
+use Phalcon\Http\Request;
 
 /**
  * 控制器基类
@@ -14,6 +15,7 @@ use Phalcon\Di;
  */
 class ControllerBase extends PhalBaseController
 {
+    public $request;
     public function beforeExecuteRoute()
     {
         parent::beforeExecuteRoute();
@@ -21,6 +23,7 @@ class ControllerBase extends PhalBaseController
 
     public function initialize()
     {
+        $this->request = new Request();
         parent::initialize();
     }
 

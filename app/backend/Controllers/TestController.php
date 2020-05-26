@@ -9,6 +9,7 @@ use App\Sdks\Library\Helpers\DiHelper;
 use App\Sdks\Library\Helpers\JWT;
 use App\Sdks\Services\Base\QueueService;
 use App\Sdks\Services\UserService;
+use Phalcon\Http\Request;
 
 /**
  * 测试控制器
@@ -23,6 +24,12 @@ class TestController extends ControllerBase
     public function indexAction()
     {
         try {
+
+            //var_dump( $this->request->getHeaders());
+            //var_dump( $this->request->getPost());
+            $userId = $this->request->getHeader("Userid");
+            var_dump($userId);
+
             //$user = UserModel::findFirst(["id"=>1]);
             $this->getFlash()->successJson("test ok");
         } catch (CustomException $e) {
@@ -119,9 +126,13 @@ class TestController extends ControllerBase
      */
     public function jwtEncodeAction()
     {
+        //校验用户登陆状态
+        //校验用户是否被禁用
         try {
             //$payload, $key, $alg = 'HS256', $keyId = null, $head = null
             $secretKey = DiHelper::getConfig()->jwtAuth->secretKey;
+            var_dump($secretKey);
+
             $token = JWT::encode(["userId" => "123458"],$secretKey);
             $this->getFlash()->successJson(['token'=>$token]);
         } catch (CustomException $e) {
