@@ -9,10 +9,20 @@
 - phalcon3.2.4及以上
 - redis扩展
 
+# 功能概览
+
+1.RPC功能封装[yar+swoole]
+2.配置文件 支持多环境  支持敏感配置 物理隔离
+3.SeasLog 高性能日志组件
+4.Beanstalk 队列操作封装
+5.Redis内存锁
+6.计数器功能
+7.缓存功能统一封装 
+8.Task离线任务
+9.接口地址支持版本号访问 如 /user/getInfo/v1    /user/getInfo/v2
 
 
-
-# 介绍
+# 详细介绍
 
 ## 分层结构
 
@@ -55,8 +65,7 @@
 > mail.php
 >
 > system.php
->
-> mongodb.php
+
 
 ### 敏感配置与公开配置与代码隔离,保证安全
 
@@ -372,59 +381,6 @@ php cli.php queue.sms exec
 
 
 
-
-
-
-
-
-
-
-
-
-# composer.json
-
-```
-{
-    "minimum-stability": "dev",
-    "prefer-stable": true,
-    "require": {
-        "illuminate/database": ">=4.0.9,<4.2",
-        "guzzlehttp/guzzle":"6.*",
-        "qiniu/php-sdk": "7.*",
-        "ashleydawson/simple-pagination": "~1.0",
-        "elasticsearch/elasticsearch": "~2.0",
-        "filp/whoops": "^1.1.6",
-        "clickalicious/phpmemadmin": "~0.3",
-        "mockery/mockery": "1.0.*@dev",
-        "phpunit/phpunit": "~4.5",
-        "endroid/qrcode": "^1.5",
-        "overtrue/wechat": "^2.1",
-        "pbweb/xhprof": "^1.0",
-        "phpoffice/phpexcel": "^1.8",
-        "springshine/getui-sdk": "^1.1",
-        "pda/pheanstalk": "^3.1",
-        "phalcon/devtools": "~3.2",
-        "inhere/php-validate": "dev-master",
-        "mongodb/mongodb": "^1.2",
-        "swiftmailer/swiftmailer": "^6.0"
-    },
-    "scripts": {
-        "post-install-cmd": [
-            "Clickalicious\\PhpMemAdmin\\Installer::postInstall"
-        ]
-    },
-    "config": {
-        "secure-http": false
-    },
-    "repositories": {
-        "packagist": {
-            "type": "composer",
-            "url": "https://packagist.phpcomposer.com"
-        }
-    }
-}
-
-```
 
 # phalconV3.4中文文档
 
