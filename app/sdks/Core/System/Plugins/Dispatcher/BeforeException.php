@@ -2,6 +2,7 @@
 
 namespace App\Sdks\Core\System\Plugins\Dispatcher;
 
+use App\Sdks\Library\Error\Exceptions\CustomException;
 use App\Sdks\Library\Exceptions\JsonFmtException;
 use App\Sdks\Library\Exceptions\JsonpFmtException;
 use App\Sdks\Library\Helpers\CommonHelper;
@@ -63,6 +64,10 @@ class BeforeException extends Plugin
                 'data' => $e->getData()
             );
             echo $e->getCallback() .'('. CommonHelper::json_encode($info, JSON_UNESCAPED_UNICODE, true) . ')';
+        }
+        //业务自定义异常
+        elseif ($e instanceof CustomException) {
+            $this->flash->errorJson($e->getData(), $e->getCode(), $e->getMessage());
         }
         // 其他异常
         else {
