@@ -9,6 +9,7 @@ use App\Sdks\Library\Helpers\DiHelper;
 use App\Sdks\Library\Helpers\JWT;
 use App\Sdks\Services\Base\QueueService;
 use App\Sdks\Services\UserService;
+use Phalcon\Crypt;
 use Phalcon\Http\Request;
 
 /**
@@ -54,7 +55,7 @@ class TestController extends ControllerBase
     public function cacheAction()
     {
         $redis = DiHelper::getRedis();
-        $redis->set('key','testdata', 10);
+        $redis->set('key', 'testdata', 10);
         var_dump($redis->get('key'));
     }
 
@@ -99,7 +100,7 @@ class TestController extends ControllerBase
         ];
 
         $jobId = QueueService::sendToQueue(QueueTaskConfig::SAVE_USER_LOGIN_INFO_KEY, $data);
-        var_dump("任务id:",$jobId);
+        var_dump("任务id:", $jobId);
     }
 
 
@@ -110,7 +111,7 @@ class TestController extends ControllerBase
     public function fromCacheMGetAction()
     {
         try {
-            $ids = [2,3,4];
+            $ids = [2, 3, 4];
 //            $userList = UserDao::findInList($ids);
             $userList = UserDao::findInListFromCacheMGet($ids);
             $this->getFlash()->successJson($userList);
@@ -133,8 +134,8 @@ class TestController extends ControllerBase
             $secretKey = DiHelper::getConfig()->jwtAuth->secretKey;
             var_dump($secretKey);
 
-            $token = JWT::encode(["userId" => "123458"],$secretKey);
-            $this->getFlash()->successJson(['token'=>$token]);
+            $token = JWT::encode(["userId" => "123458"], $secretKey);
+            $this->getFlash()->successJson(['token' => $token]);
         } catch (CustomException $e) {
             throw new JsonFmtException($e->getMessage(), $e->getCode());
         }
@@ -148,9 +149,45 @@ class TestController extends ControllerBase
     {
         try {
             $secretKey = DiHelper::getConfig()->jwtAuth->secretKey;
+            var_dump($secretKey);die();
             $tokenb = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiIxMjM0NTgifQ.-XLFdIggONBJsrUSpu16QLfWw6peaY1H-kwzeMbpKqc';
-            $body = JWT::decode($tokenb,$secretKey);
+            $body = JWT::decode($tokenb, $secretKey);
             var_dump($body);
+        } catch (CustomException $e) {
+            throw new JsonFmtException($e->getMessage(), $e->getCode());
+        }
+    }
+
+
+    /**
+     * AES 加密/解密测试
+     * @throws Crypt\Exception
+     * @throws Crypt\Mismatch
+     * @throws JsonFmtException
+     */
+    public function aesAction()
+    {
+        try {
+            // Create an instance
+            $crypt = new Crypt();
+
+            //$crypt->setCipher('aes-256-ctr');
+            //$crypt->setHashAlgo('aes-256-cfb');
+
+            // Force calculation of a digest of the message based on the Hash algorithm
+            //$crypt->useSigning(true);
+
+            $key = "T4\xb1\x8d\xa9\x98\x664t7w!z%C*F-Jk\x98\x05\\\x5c";
+            $text = '{ "code": "2000", "msg": "参数错误:【用户名必须】", "body": {} }';
+
+            // Perform the encryption
+            $encrypted = $crypt->encrypt($text, $key);
+            //var_dump('加密后');
+            var_dump($encrypted);
+            // Now decrypt
+            echo $crypt->decrypt($encrypted, $key);
+            var_dump("解密后:");
+            //var_dump($crypt);
         } catch (CustomException $e) {
             throw new JsonFmtException($e->getMessage(), $e->getCode());
         }

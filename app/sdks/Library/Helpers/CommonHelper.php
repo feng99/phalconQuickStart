@@ -302,6 +302,22 @@ class CommonHelper
     }
 
     /**
+     * 判断是否正式环境
+     *
+     * @return bool
+     */
+    public static function isOnlyPro()
+    {
+        $ret = false;
+        $config = DiHelper::getConfig();
+        $env = $config->application->env;
+        if ($env == 'pro') {
+            $ret = true;
+        }
+        return $ret;
+    }
+
+    /**
      * 判断是否在微信浏览器中
      *
      * @return bool

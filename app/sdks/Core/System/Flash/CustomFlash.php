@@ -3,6 +3,7 @@
 namespace App\Sdks\Core\System\Flash;
 
 use App\Sdks\Library\Helpers\CommonHelper;
+use Phalcon\Crypt;
 use Phalcon\Flash\Direct;
 use Phalcon\Http\Request;
 use Phalcon\Http\Response;
@@ -59,6 +60,12 @@ class CustomFlash extends Direct
         $this->setAutomaticHtml(false);
 
         if ($code === 0) {
+            //pro环境 开启接口返回数据加密
+            if (CommonHelper::isOnlyPro()) {
+                $crypt = new Crypt();
+                $key = DiHelper::getConfig()->application->apiDataEncryptKey;
+                $message = $crypt->encrypt($message, $key);
+            }
             $this->success($message);
         } else {
             $this->error($message);
