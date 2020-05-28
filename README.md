@@ -12,13 +12,21 @@
 # 功能概览
 
 1.RPC功能封装[yar+swoole]
+
 2.配置文件 支持多环境  支持敏感配置 物理隔离
+
 3.SeasLog 高性能日志组件
+
 4.Beanstalk 队列操作封装
+
 5.Redis内存锁
+
 6.计数器功能
+
 7.缓存功能统一封装 
+
 8.Task离线任务
+
 9.接口地址支持版本号访问 如 /user/getInfo/v1    /user/getInfo/v2
 
 
@@ -433,4 +441,5 @@ security->checkPassword($password, $password_hash);
 
 ### 致谢
 
-感谢军哥,在phalcon结合yar+swoole实现 RPC Server,给予的帮助.
+感谢军哥,杜松,给予的帮助.
+
