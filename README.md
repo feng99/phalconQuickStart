@@ -1,16 +1,14 @@
 [TOC]
 
-# phalcon_demo
+# phalconQuickStart
 
-基于phalcon3.4.5封装的demo项目
-
-帮助你快速启动项目.
+基于phalcon3.4.5封装,帮助你快速启动项目.
 
 # 环境要求
 - php7.0及以上
 - phalcon3.2.4及以上
 - redis扩展
-- mongodb扩展
+
 
 
 
