@@ -28,10 +28,11 @@ class TestController extends ControllerBase
 
             //var_dump( $this->request->getHeaders());
             //var_dump( $this->request->getPost());
-            $userId = $this->request->getHeader("Userid");
-            var_dump($userId);
+//            $userId = $this->request->getHeader("Userid");
+//            var_dump($userId);
 
             //$user = UserModel::findFirst(["id"=>1]);
+            sleep(1);
             $this->getFlash()->successJson("test ok");
         } catch (CustomException $e) {
             throw new JsonFmtException($e->getMessage(), $e->getCode());
