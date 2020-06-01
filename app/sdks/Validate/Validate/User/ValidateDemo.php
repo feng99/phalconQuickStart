@@ -5,11 +5,9 @@ namespace App\Sdks\Core\Logic\Router\Validate\User;
 use App\Sdks\Core\Logic\Router\Validate\BsseValidate;
 
 /**
- * 用户登录验证器
- *
- * 
+ * 接口参数验证器 demo
  */
-class Login extends BsseValidate
+class ValidateDemo extends BsseValidate
 {
     public function rules()
     {

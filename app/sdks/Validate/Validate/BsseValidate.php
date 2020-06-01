@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Sdks\Core\Logic\Router\Validate;
+namespace App\Sdks\Validate\Validate;
 
 use Inhere\Validate\Validation;
 

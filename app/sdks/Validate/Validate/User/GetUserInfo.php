@@ -1,8 +1,11 @@
 <?php
 
-namespace App\Sdks\Core\Logic\Router\Validate\User;
 
-use App\Sdks\Core\Logic\Router\Validate\BsseValidate;
+
+namespace App\Sdks\Validate\Validate\User;
+
+
+use App\Sdks\Validate\Validate\BsseValidate;
 
 /**
  * 用户信息验证器

@@ -39,29 +39,33 @@ class BeforeDispatchLoop extends Plugin
         $controller     = $this->router->getControllerName();
         $action         = $this->router->getActionName();
         $params         = $this->router->getParams();
-        $version = 0;
+        $path           = $controller.'/'.$action;
+        $version        = 0;
         if(!empty($params)){
             $version      = $params[0];
+            if(mb_stripos($version, 'v') !== false) {
+                $path           = $controller.'/'.$action.'/'.$version;
+                $this->dispatcher->forward(
+                    [
+                        'controller' => $controller,
+                        'action'     => $action.ucfirst($version),
+                    ]
+                );
+            }
         }
-
-        if($version !== 0){
-            $this->dispatcher->forward(
-                [
-                    'controller' => $controller,
-                    'action'     => $action.ucfirst($version),
-                ]
-            );
-        }
-
-
 
         // 设置数据
         $dispatcher->setParams([
-            '_n' => $namespace,
-            '_c' => $controller,
-            '_a' => $action,
-            '_v' => $version,
+            '_n'     => $namespace,
+            '_c'     => $controller,
+            '_a'     => $action,
+            '_v'     => $version,
+            '_path'  => $path
         ]);
+
+
+
+
     }
 
 }

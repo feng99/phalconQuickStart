@@ -1,15 +1,16 @@
 <?php
 
-namespace App\Sdks\Core\Logic\Router\Validate\User;
+namespace App\Sdks\Validate\Validate\User;
 
-use App\Sdks\Core\Logic\Router\Validate\BsseValidate;
+
+use App\Sdks\Validate\Validate\BsseValidate;
 
 /**
- * 用户注册验证器
+ * 用户登录验证器
  *
  * 
  */
-class Register extends BsseValidate
+class Login extends BsseValidate
 {
     public function rules()
     {

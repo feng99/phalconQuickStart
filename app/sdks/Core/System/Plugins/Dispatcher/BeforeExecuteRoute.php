@@ -10,6 +10,7 @@ use App\Sdks\Library\Error\Settings\CoreLogic;
 use App\Sdks\Library\Exceptions\JsonFmtException;
 use App\Sdks\Library\Helpers\CommonHelper;
 use App\Sdks\Library\Helpers\DiHelper;
+use App\Sdks\Validate\ValidateRouteConfig;
 use Phalcon\Mvc\Dispatcher;
 use Phalcon\Events\Event;
 use Phalcon\Mvc\User\Plugin;
@@ -48,11 +49,12 @@ class BeforeExecuteRoute extends Plugin
             $a    = $dispatcher->getParam('_a');
             $path = "{$n}\\{$c}::{$a}";
 
-            $route_config = RouteConfig::$SETTINGS;
-            if (isset($route_config[$path])) {
-                foreach ($route_config[$path] as $plugin_name => $plugin_config) {
-                    $this->{$plugin_name}($plugin_config);
-                }
+            $routeConfig = ValidateRouteConfig::$SETTINGS;
+            if (isset($routeConfig[$path])) {
+                //过滤器
+                $this->filter([$routeConfig[$path]['filter']]);
+                //验证器
+                $this->validate([$routeConfig[$path]['validate']]);
             }
         } catch (CustomException $e) {
             throw new JsonFmtException($e->getMessage(), $e->getCode());

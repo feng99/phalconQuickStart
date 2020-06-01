@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Sdks\Core\Logic\Router\Filter\User;
+namespace App\Sdks\Validate\Filter\User;
 
-use App\Sdks\Core\Logic\Router\Filter\BaseFilter;
+
+use App\Sdks\Validate\Filter\BaseFilter;
 
 /**
  * 用户注册过滤器

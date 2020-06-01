@@ -382,7 +382,9 @@ public function testAction()
 执行命令
 
 ```
-php cli.php task.test test
+php /data/web/keke/miai/app/userserver/app/tasks/cli.php task.uuid run
+
+#队列任务  由supervisor管理
 php cli.php queue.sms exec
 ```
 

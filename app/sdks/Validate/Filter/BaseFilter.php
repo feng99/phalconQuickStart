@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Sdks\Core\Logic\Router\Filter;
+namespace App\Sdks\Validate\Filter;
 
 use Inhere\Validate\Filter\Filtration;
 

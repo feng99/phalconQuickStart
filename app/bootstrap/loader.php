@@ -21,6 +21,7 @@ $loader->registerNamespaces(
       'App\Sdks\Models' => ROOT_PATH . 'app/sdks/Models/',
       'App\Sdks\Library\Helpers\MemoryLock' => ROOT_PATH . '/app/sdks/Library/MemoryLock',
       'App\Rpc' => ROOT_PATH . '/app/rpc/',
+      'App\Sdks\Validate' => ROOT_PATH .'/app/sdks/Validate',
    ]
 , true);
 
