@@ -3,11 +3,6 @@
 namespace App\Sdks\Validate;
 
 
-use App\Sdks\Validate\Filter\Test\FilterTestIndex;
-use App\Sdks\Validate\Filter\Upload\FilterUploadImg;
-use App\Sdks\Validate\Validate\Test\ValidateTestIndex;
-use App\Sdks\Validate\Validate\Upload\ValidateUploadImg;
-
 /**
  * 参数过滤与参数验证的路由配置
  */
@@ -16,13 +11,17 @@ class ValidateRouteConfig
 
 
     public static $SETTINGS = [
-        'test/index/v1' => [
-            'filter' => FilterTestIndex::class,
-            'validate' => ValidateTestIndex::class
+        //样例  单个校验规则
+        'room/open/v1' => [
+            //'validate' => ['mediaType,roomType,name','required','msg' => '{attr} 必须!']
+            'validate' => ['mediaType,roomType,name', 'required', 'msg' => '必须传递']
         ],
-        'upload/img' => [
-            'filter' => FilterUploadImg::class,
-            'validate' => ValidateUploadImg::class
+        //样例  多个校验规则
+        'room/userJoin/v1' => [
+            'validate' => [
+                ['roomId', 'required', 'msg' => '必须传递'],
+                ['roomId', 'number', 'msg' => '必须>0']
+            ]
         ],
 
 

@@ -2,7 +2,6 @@
 
 namespace App\Sdks\Core\System\Plugins\Dispatcher;
 
-use App\Sdks\Library\Constants\RouteConfig;
 use App\Sdks\Library\Error\ErrorHandle;
 use App\Sdks\Library\Error\Exceptions\CustomException;
 use App\Sdks\Library\Error\Handlers\Err;
@@ -10,6 +9,7 @@ use App\Sdks\Library\Error\Settings\CoreLogic;
 use App\Sdks\Library\Exceptions\JsonFmtException;
 use App\Sdks\Library\Helpers\CommonHelper;
 use App\Sdks\Library\Helpers\DiHelper;
+use App\Sdks\Validate\BaseValidate;
 use App\Sdks\Validate\ValidateRouteConfig;
 use Phalcon\Mvc\Dispatcher;
 use Phalcon\Events\Event;
@@ -18,7 +18,7 @@ use Phalcon\Mvc\User\Plugin;
 /**
  * 执行路由前触发插件
  *
- * 
+ *
  */
 class BeforeExecuteRoute extends Plugin
 {
@@ -35,9 +35,10 @@ class BeforeExecuteRoute extends Plugin
     /**
      * 执行路由前触发
      *
-     * @param  Event       $event
-     * @param  Dispatcher  $dispatcher
+     * @param Event $event
+     * @param Dispatcher $dispatcher
      * @throws JsonFmtException
+     * @throws \ReflectionException
      */
     public function beforeExecuteRoute(Event $event, Dispatcher $dispatcher)
     {
@@ -47,14 +48,25 @@ class BeforeExecuteRoute extends Plugin
             $n    = $dispatcher->getParam('_n');
             $c    = $dispatcher->getParam('_c');
             $a    = $dispatcher->getParam('_a');
-            $path = "{$n}\\{$c}::{$a}";
-
+            //$path = "{$n}\\{$c}::{$a}";
+            $path    = $dispatcher->getParam('_path');
             $routeConfig = ValidateRouteConfig::$SETTINGS;
-            if (isset($routeConfig[$path])) {
+            if (!empty($routeConfig[$path])) {
                 //过滤器
-                $this->filter([$routeConfig[$path]['filter']]);
+                if(!empty($routeConfig[$path]['filter'])){
+                    $this->filter([$routeConfig[$path]['filter']]);
+                }
                 //验证器
-                $this->validate([$routeConfig[$path]['validate']]);
+                $validateConf = $routeConfig[$path]['validate'];
+                if(!empty($validateConf)){
+                    if (count($validateConf) == count($validateConf, 1)) {
+                        $this->validate([$validateConf]);
+                    } else {
+                        foreach ($validateConf as $validate) {
+                            $this->validate([$validate]);
+                        }
+                    }
+                }
             }
         } catch (CustomException $e) {
             throw new JsonFmtException($e->getMessage(), $e->getCode());
@@ -97,25 +109,16 @@ class BeforeExecuteRoute extends Plugin
     }
 
     /**
-     * 验证器
-     *
-     * @param array $validates
-     * @throws \ReflectionException
+     * 参数验证器
+     * @param $rules
      */
-    protected function validate(array $validates)
+    protected function validate($rules)
     {
-        foreach ($validates as $validate) {
-            $valdate = CommonHelper::callMethod($validate, 'validations', $this->getData());
-            if ($valdate->fail()) {
-                foreach ($valdate->getErrors() as $error) {
-                    $err = Err::create(CoreLogic::INVALID_PARAM, [$error['msg']]);
-                    ErrorHandle::throwErr($err);
-                }
-            } else {
-                // 验证通过的安全数据
-                //$safe_data = $valdate->getSafeData();
-                // 原始数据
-                //$post_data = $valdate->all();
+        $baseValidate = new BaseValidate();
+        $validateRes  = $baseValidate->validations($rules,$this->getData());
+        if ($validateRes->failed()) {
+            foreach ($validateRes->getErrors() as $error) {
+                ErrorHandle::throwErr(Err::create(CoreLogic::INVALID_PARAM, [$error['msg']]));
             }
         }
     }

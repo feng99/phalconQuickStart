@@ -1,5 +1,3 @@
-[TOC]
-
 # phalconQuickStart
 
 基于phalcon3.4.5封装,帮助你快速启动项目.
@@ -395,52 +393,25 @@ php cli.php queue.sms exec
 
 
 
+# 优化记录
+
+| 编号 | 优化内容                                                     | 代码所在文件            | 时间       |
+| ---- | ------------------------------------------------------------ | ----------------------- | ---------- |
+| 1    | 优化获取参数时,getPost()函数 编辑器不提示的问题              | ControllerBase.php      | 2020-06-29 |
+| 2    | 优化参数校验  支持单个参数多个校验规则                       | ValidateRouteConfig.php | 2020-06-29 |
+| 3    | 删除DaoBase类,用CacheTraits类,减少类之间的继承               | CacheTraits.php         | 2020-06-30 |
+| 4    | 优化参数校验模块的目录结构, 只保留BaseFilter  BaseValidate  ValidateRouteConfig文件 | app/sdks/Validate       | 2020-06-30 |
+| 5    |                                                              |                         |            |
+
+
+
 # phalconV3.4中文文档
 
 https://www.kancloud.cn/jaya1992/phalcon_doc_zh/
 
-# 其他
+# 
 
-## Phalcon\Security\Random 随机内容生成类
-
-```
-Phalcon\Security\Random类生成生成许多类型的随机数据变得非常容易	
-<?php
-
-use Phalcon\Security\Random;
-
-$random = new Random();
-
-// ...
-$bytes      = $random->bytes();
-
-// 随机生成一个长度为$length的十六进制字符串
-$hex        = $random->hex($length);
-
-// 随机生成长度为$length的base64字符串
-$base64     = $random->base64($length);
-
-// 生产一个长度为$length的安全base64字符串.
-$base64Safe = $random->base64Safe($length);
-
-// 生成一个UUId
-// See https://en.wikipedia.org/wiki/Universally_unique_identifier
-$uuid       = $random->uuid();
-
-//生成一个0-N之间的随机数字
-//可用于redis key加随机数,防止缓存雪崩问题
-$number     = $random->number($n);
-```
-
-### 生成密码
-
-```
-$security = \App\Sdks\Library\Helpers\DiHelper::getShared("security");
-//生成密码
-security->generatePassword("明文密码");
-//校验密码 
-security->checkPassword($password, $password_hash);
-```
+### 
 
 
 
