@@ -393,7 +393,7 @@ php cli.php queue.sms exec
 
 
 
-# 优化记录
+# 更新记录
 
 | 编号 | 优化内容                                                     | 代码所在文件            | 时间       |
 | ---- | ------------------------------------------------------------ | ----------------------- | ---------- |
@@ -401,7 +401,12 @@ php cli.php queue.sms exec
 | 2    | 优化参数校验  支持单个参数多个校验规则                       | ValidateRouteConfig.php | 2020-06-29 |
 | 3    | 删除DaoBase类,用CacheTraits类,减少类之间的继承               | CacheTraits.php         | 2020-06-30 |
 | 4    | 优化参数校验模块的目录结构, 只保留BaseFilter  BaseValidate  ValidateRouteConfig文件 | app/sdks/Validate       | 2020-06-30 |
-| 5    |                                                              |                         |            |
+| 5    | 在控制器基类开启跨域支持                                     | ControllerBase          | 2020-07-12 |
+| 6    | 在控制器基类 打印所有请求的请求参数  方便调试                | ControllerBase          | 2020-07-15 |
+| 7    | 新增PageTraits类  封装统一的分页组件                         | PageTraits              | 2020-07-17 |
+| 8    | 新增自定义断言类Assert类,对数据为空和操作失败,进行通知处理,减少if(){{} 代码 | Assert                  | 2020-07-19 |
+| 9    |                                                              |                         |            |
+| 10   |                                                              |                         |            |
 
 
 

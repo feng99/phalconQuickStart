@@ -7,6 +7,7 @@ use App\Sdks\Core\System\Flash\CustomFlash;
 use App\Sdks\Library\Error\ErrorHandle;
 use App\Sdks\Library\Error\Handlers\Err;
 use App\Sdks\Library\Error\Settings\CoreLogic;
+use App\Sdks\Library\Helpers\LogHelper;
 use Phalcon\Db\Adapter\Pdo\Mysql;
 use Phalcon\Di;
 use Phalcon\Http\Request;
@@ -19,15 +20,36 @@ use Phalcon\Http\Request;
 class ControllerBase extends PhalBaseController
 {
     public $request;
+    public $loginUuid;
     public function beforeExecuteRoute()
     {
         parent::beforeExecuteRoute();
     }
 
+    public function getRequest() : Request
+    {
+        if($this->request == null) {
+            $this->request = new Request();
+        }
+        return $this->request;
+    }
+
     public function initialize()
     {
-        $this->request = new Request();
+        // 允许跨域
+        header("Access-Control-Allow-Origin:*");
+
+
+        $this->request = $this->getRequest();
         parent::initialize();
+
+        $this->loginUuid = intval($this->request->getHeader("Userid"));
+
+        $params  = $this->request->get();
+        unset($params['_url']);
+        unset($params['PHPSESSID']);
+        //打印请求地址和参数 方便调试
+        LogHelper::debug("TradeServer:request_params",$params);
     }
 
     /**
@@ -49,4 +71,6 @@ class ControllerBase extends PhalBaseController
             ErrorHandle::throwErr(Err::create(CoreLogic::REQUEST_METHOD_ERROR));
         }
     }
+
+
 }
