@@ -1,12 +1,21 @@
 <?php
+
+namespace App\Sdks\Core\Traits;
+
+use App\Sdks\Constants\Base\RedisKey;
+use App\Sdks\Library\Error\ErrorHandle;
+use App\Sdks\Library\Error\Handlers\Err;
+use App\Sdks\Library\Error\Handlers\SysErr;
+use App\Sdks\Library\Error\Settings\System;
+use App\Sdks\Library\Helpers\CommonHelper;
+use App\Sdks\Library\Helpers\DiHelper;
+use App\Sdks\Library\Helpers\LogHelper;
+use Phalcon\Di;
+use Phalcon\Security\Random;
+
+
 /**
- * 实体服务基类
- * 主要封装
- * //1.根据主键id查询单个对象
- * //2.根据指定字段查询单个对象
- * //3.根据主键id或者自定义字段 进行in查询
- *
- *
+ * 缓存插件
  * //封装缓存读取操作  注意:只针对String结构
  * 1.FromCache
  * 2.DelCache
@@ -14,58 +23,8 @@
  * 5.FromCacheMGet
  * 6.DelCacheBatch
  */
-
-namespace App\Sdks\Dao;
-
-use App\Sdks\Constants\McKey;
-use Phalcon\Security\Random;
-use App\Sdks\Models\Base\ModelBase;
-use App\Sdks\Constants\Base\RedisKey;
-use App\Sdks\Library\Helpers\DiHelper;
-use App\Sdks\Library\Helpers\LogHelper;
-use App\Sdks\Library\Error\ErrorHandle;
-use App\Sdks\Services\Base\ServiceBase;
-use App\Sdks\Library\Helpers\CommonHelper;
-use App\Sdks\Library\Error\Settings\System;
-use App\Sdks\Library\Error\Handlers\SysErr;
-
-
-class DaoBase extends ModelBase
+trait CacheTraits
 {
-
-
-    /**
-     * 获取当前类实例
-     *
-     * @return ServiceBase
-     * @throws \ReflectionException
-     */
-    public static function getInstance()
-    {
-        $class = get_called_class();
-
-        if (isset(self::$instances[$class])) {
-            return self::$instances[$class];
-        }
-
-        if (!method_exists($class, '__construct')) {
-            self::$instances[$class] = new $class();
-            return self::$instances[$class];
-        }
-
-        $params = func_get_args();
-        $ref_method = new \ReflectionMethod($class, '__construct');
-        $construct_params = $ref_method->getParameters();
-        if (!empty($construct_params)) {
-            $ref_class = new \ReflectionClass($class);
-            self::$instances[$class] = $ref_class->newInstanceArgs($params);
-        } else {
-            self::$instances[$class] = new $class();
-        }
-
-        return self::$instances[$class];
-    }
-
 
     public function __call($name, $arguments)
     {
@@ -77,7 +36,6 @@ class DaoBase extends ModelBase
      * @param $name
      * @param $arguments
      * @return mixed|void|null
-     * @throws \ReflectionException
      */
     public static function __callStatic($name, $arguments)
     {
@@ -122,7 +80,7 @@ class DaoBase extends ModelBase
         if (method_exists($class, $method)) {
             return $class::$method($arguments);
         } else {
-            trigger_error("Call to undefined method $class::$method()", E_USER_ERROR);
+            ErrorHandle::throwErr(Err::create(System::FUNCTION_NOT_EXISTS, [$class.'::'.$method]));
         }
     }
 
@@ -154,7 +112,7 @@ class DaoBase extends ModelBase
                 ];
                 //过期时间在原定时间,增加0-3分钟的随机时间,防止缓存雪崩问题
                 $random = new Random();
-                $cache->set($cacheKey, json_encode($res), $expire + $random->number(180));
+                $cache->set($cacheKey, json_encode($res), $expire + rand(1,180));
             } while (0);
 
             //LockManager::unlock($lock);
@@ -189,7 +147,6 @@ class DaoBase extends ModelBase
      * @param $cacheKey
      * @param $time
      * @return array|bool
-     * @throws \ReflectionException
      */
     private static function wrapGetCacheBatch($class, $method, $arguments, $cacheKey, $time)
     {
@@ -253,7 +210,7 @@ class DaoBase extends ModelBase
                 //过期时间在原定时间,增加0-3分钟的随机时间,防止缓存雪崩问题
                 $random = new Random();
                 foreach ($set_data as $fk => $fv) {
-                    $redis->expire($fk, $time + $random->number(180));
+                    $redis->expire($fk, $time + rand(1,180));
                 }
                 $res = array_merge($db_res, $res);
                 //按照id重新按顺序组合
@@ -298,39 +255,5 @@ class DaoBase extends ModelBase
             LogHelper::debug('del_entity_key', $cache_key);
         }
         return $res;
-    }
-
-
-    /**
-     * 获取全局共享的DI服务
-     *
-     * @param $name
-     * @return mixed
-     */
-    protected static function getShared($name)
-    {
-        return \Phalcon\Di::getDefault()->getShared($name);
-    }
-
-    /**
-     * 获取配置
-     *
-     * @return mixed
-     */
-    protected static function getSharedConfig()
-    {
-        return \Phalcon\Di::getDefault()->getShared('config');
-    }
-
-    /**
-     * 获取类常量
-     *
-     * @return array
-     * @throws \ReflectionException
-     */
-    public static function getClassConstants()
-    {
-        $reflect = new \ReflectionClass(get_called_class());
-        return array_values($reflect->getConstants());
     }
 }

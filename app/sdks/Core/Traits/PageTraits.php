@@ -14,6 +14,7 @@ trait PageTraits
      * 获取分页参数
      *
      * @param  array  $params
+     *
      * @return array
      */
     public static function getPageArgs(array $params): array

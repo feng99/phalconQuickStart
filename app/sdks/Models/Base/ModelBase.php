@@ -2,8 +2,6 @@
 
 namespace App\Sdks\Models\Base;
 
-use App\Sdks\Library\LogHelper;
-use App\Sdks\Models\Oto\OpenCityModel;
 use Phalcon\Mvc\Model;
 use App\Sdks\Core\Traits\CacheTraits;
 
@@ -44,6 +42,20 @@ class ModelBase extends Model
 
         return $this;
     }
+
+
+    /**
+     * 返回一个数组
+     * @param null $parameters
+     * @return array|Model
+     */
+    public static function findFirstArray($parameters = null)
+    {
+        $model = new static();
+        $result  = $model::findFirst($parameters);
+        return !empty($result) ? $result : [];
+    }
+
 
     /**
      * 批量添加
