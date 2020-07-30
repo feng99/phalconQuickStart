@@ -14,7 +14,7 @@ class LockConfig
      */
     protected static $configAdapter = [
         self::REDIS_ADAPTER => [
-            'class' => RedisAdapter::class
+            'class' => LockManager::class
         ],
     ];
 
@@ -36,14 +36,15 @@ class LockConfig
         // 适配器类型
         'adapter'         => self::REDIS_ADAPTER,
 
-        // 内存锁获取时重试等待时间，单位为微秒。默认等待10ms，系统压力比较大，可以适当增大该时间值
-        'lockTimewait'    => 10000,
+        // 内存锁获取时重试等待时间，单位为微秒。
+        //默认等待10ms，系统压力比较大，可以适当增大该时间值
+        'lockTimeWait'    => 10000,
 
         // 设置重试次数，以保证不会到达PHP超时时间
-        'lockRetryTimes'  => 1000,
+        'lockRetryCount'  => 1,
 
-        // 内存锁过期时间，需要大于PHP脚本默认的超时时间30s
-        'lockTimeout'     => 35,
+        // 内存锁过期时间，防止加锁后,不释放 造成死锁
+        'lockTimeout'     => 10,
 
         'lockPrefix'      => '_hm_lock_',
     ];
